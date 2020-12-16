@@ -6,7 +6,7 @@
 /*   By: mberne <mberne@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 10:57:42 by mberne            #+#    #+#             */
-/*   Updated: 2020/12/14 17:55:57 by mberne           ###   ########lyon.fr   */
+/*   Updated: 2020/12/16 14:53:29 by mberne           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,44 +29,35 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	i;
 	size_t	j;
 	char	*ns;
+	size_t	lens1;
+	size_t	lens2;
 
-	i = 0;
-	j = 0;
+	i = -1;
+	j = -1;
+	lens1 = ft_strlen(s1);
+	lens2 = ft_strlen(s2);
 	if (!s1 && !s2)
 		return (0);
-	if (!(ns = malloc(sizeof(char) * ((ft_strlen(s1) + ft_strlen(s2) + 1)))))
+	if (!(ns = malloc(sizeof(char) * ((lens1 + lens2 + 1)))))
 		return (0);
-	while (i < ft_strlen(s1))
-	{
+	while (++i < lens1)
 		ns[i] = s1[i];
-		i++;
-	}
-	while (j < ft_strlen(s2))
-	{
+	while (++j < lens2)
 		ns[i + j] = s2[j];
-		j++;
-	}
 	ns[i + j] = '\0';
 	free((char *)s1);
 	return (ns);
 }
 
-char	*ft_strchr(const char *s, int c)
+int		ft_strchr(const char *s)
 {
-	size_t	i;
-	char	value;
-	size_t	len;
-
-	i = 0;
 	if (!s)
 		return (0);
-	value = (char)c;
-	len = ft_strlen((char *)s);
-	while (i <= len)
+	while (*s)
 	{
-		if (s[i] == value)
-			return ((char*)&s[i]);
-		i++;
+		if (*s == '\n')
+			return (1);
+		s++;
 	}
 	return (0);
 }

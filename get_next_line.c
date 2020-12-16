@@ -6,7 +6,7 @@
 /*   By: mberne <mberne@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 10:56:11 by mberne            #+#    #+#             */
-/*   Updated: 2020/12/14 18:05:56 by mberne           ###   ########lyon.fr   */
+/*   Updated: 2020/12/16 15:21:26 by mberne           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,22 @@ char	*get_line(char *str)
 	return (line);
 }
 
+int		fill_buffer(char **buffer, int fd, int *return_read, char **tmp)
+{
+	while (ft_strchr(*buffer) == 0 && *return_read != 0)
+	{
+		if ((*return_read = read(fd, *tmp, BUFFER_SIZE)) == -1)
+		{
+			free(*tmp);
+			return (-1);
+		}
+		(*tmp)[*return_read] = '\0';
+		if (!(*buffer = ft_strjoin(*buffer, *tmp)))
+			return (-1);
+	}
+	return (0);
+}
+
 int		get_next_line(int fd, char **line)
 {
 	static char	*buffer;
@@ -52,19 +68,18 @@ int		get_next_line(int fd, char **line)
 		return (-1);
 	if (!(tmp = malloc((sizeof(char) * (BUFFER_SIZE + 1)))))
 		return (-1);
-	while ((ft_strchr(buffer, '\n')) == 0 && return_read != 0)
-	{
-		if ((return_read = read(fd, tmp, BUFFER_SIZE)) == -1)
-			free(tmp);
-		if (return_read == -1)
-			return (-1);
-		tmp[return_read] = '\0';
-		buffer = ft_strjoin(buffer, tmp);
-	}
+	if (fill_buffer(&buffer, fd, &return_read, &tmp) == -1)
+		return (-1);
 	free(tmp);
-	*line = get_line(buffer);
-	buffer = get_buffer(buffer);
+	if (!(*line = get_line(buffer)))
+		return (-1);
+	if (!(buffer = get_buffer(buffer)))
+		return (-1);
 	if (return_read == 0)
+	{
+		free(buffer);
+		buffer = NULL;
 		return (0);
+	}
 	return (1);
 }
